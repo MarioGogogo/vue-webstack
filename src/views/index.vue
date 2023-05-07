@@ -6,7 +6,7 @@
           <!-- logo -->
           <div class="logo">
             <a href="javascript:void(0)" class="logo-expanded">
-              <img src="../assets/images/logo@2x.png" width="100%" alt="" />
+              <img src="../assets/images/logo@2x.png" width="160%" alt="" />
             </a>
             <a href="javascript:void(0)" class="logo-collapsed">
               <img
@@ -29,7 +29,12 @@
         <ul id="main-menu" class="main-menu">
           <li v-for="(menu, idx) in items" :key="idx">
             <a :href="'#' + transName(menu)" class="smooth">
-              <i :class="menu.icon"></i>
+              <!-- <i :class="menu.icon"></i> -->
+              <img
+                src="../assets/images/logo-collapsed@2x.png"
+                width="24"
+                alt=""
+              />
               <span class="title">{{ transName(menu) }}</span>
             </a>
             <ul v-if="menu.children">
@@ -63,10 +68,16 @@
       <nav class="navbar user-info-navbar" role="navigation">
         <ul class="user-info-menu left-links list-inline list-unstyled">
           <li class="hidden-sm hidden-xs">
-            <a href="javascript:void(0)" data-toggle="sidebar"><i class="fa-bars"></i></a>
+            <a href="javascript:void(0)" data-toggle="sidebar"
+              ><i class="fa-bars"></i
+            ></a>
           </li>
           <li class="dropdown hover-line language-switcher">
-            <a href="javascript:void(0)" class="dropdown-toggle" data-toggle="dropdown">
+            <a
+              href="javascript:void(0)"
+              class="dropdown-toggle"
+              data-toggle="dropdown"
+            >
               <img :src="lang.flag" /> {{ lang.name }}
             </a>
             <ul class="dropdown-menu languages">
@@ -117,7 +128,7 @@ export default {
     WebItem,
     Footer,
   },
-  data() {
+  data () {
     return {
       items: itemsData,
       lang: {},
@@ -135,12 +146,12 @@ export default {
       ],
     };
   },
-  created() {
+  created () {
     this.lang = this.langList[0];
     loadJs();
   },
   methods: {
-    transName(webItem) {
+    transName (webItem) {
       return this.lang.key === "en" ? webItem.en_name : webItem.name;
     },
   },
@@ -148,4 +159,25 @@ export default {
 </script>
 
 <style>
+.sidebar-menu .logo-env {
+  padding: 4px 45px !important;
+}
+.logo-expanded {
+  /* position: absolute; */
+  margin: -40px;
+}
+.main-menu {
+  font-size: 16px;
+}
+.sidebar-menu .main-menu {
+  padding: 0 20px !important;
+}
+.sidebar-menu .main-menu a {
+  padding: 13px 5px 13px 20px !important;
+}
+.sidebar-menu .main-menu ul {
+  padding-left: 20px !important;
+}
 </style>
+
+
