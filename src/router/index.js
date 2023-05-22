@@ -44,6 +44,16 @@ const routes = [
           table: () => import(/* webpackChunkName: "setting" */ '@/views/console/setting.vue'),
         },
       },
+      {
+        path: 'logs',
+        name: 'logs',
+        meta: {
+          title: '日志管理',
+        },
+        components: {
+          table: () => import(/* webpackChunkName: "setting" */ '@/views/console/logs.vue'),
+        },
+      },
     ],
   },
 ];

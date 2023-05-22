@@ -73,12 +73,16 @@
     >
       <div class="classify-edit">
         <div class="classify-edit-item">
-          <p>名称</p>
+          <p class="classify-edit-item__title">名称</p>
           <el-input v-model="editValue" placeholder="请输入名称"></el-input>
         </div>
         <div class="classify-edit-item">
-          <p>图标</p>
-          <el-select v-model="selectValue" placeholder="请选择">
+          <p class="classify-edit-item__title">图标</p>
+          <el-select
+            class="classify-edit-select"
+            v-model="selectValue"
+            placeholder="请选择"
+          >
             <el-option
               v-for="item in options"
               :key="item.value"
@@ -90,9 +94,12 @@
             </el-option>
           </el-select>
         </div>
-        <el-button type="primary" @click="handleSave">{{
-          saveTitle
-        }}</el-button>
+        <el-button
+          class="classify-edit-btn"
+          type="primary"
+          @click="handleSave"
+          >{{ saveTitle }}</el-button
+        >
       </div>
     </el-drawer>
   </div>
@@ -199,6 +206,9 @@ export default {
         cancelButtonText: '取消',
         type: 'warning'
       }).then(async () => {
+        if (this.multipleSelection.length === 0) {
+          return this.$message.error("请选择要删除的文件");
+        }
         const params = {
           ids: this.multipleSelection.map(item => item._id)
         }
@@ -260,3 +270,33 @@ export default {
   }
 }
 </script>
+
+
+<style scoped>
+/deep/ #el-drawer__title span {
+  font-size: 20px;
+}
+.classify-head {
+  padding: 10px 0;
+}
+.classify-edit {
+  padding: 10px;
+}
+.classify-edit-item {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  margin-bottom: 10px;
+}
+.classify-edit-item__title {
+  width: 20%;
+  font-size: 20px;
+}
+.classify-edit-select {
+  width: 100%;
+}
+.classify-edit-btn {
+  width: 100%;
+  font-size: 20px;
+}
+</style>

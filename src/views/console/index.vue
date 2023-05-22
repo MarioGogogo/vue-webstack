@@ -48,7 +48,7 @@ export default {
           return this.$message.error(res.message);
         }
         this.$router.push({
-          path: "/main"
+          path: "/main/classify"
         })
 
       } catch (error) {
