@@ -14,6 +14,19 @@
         end-placeholder="结束日期"
       >
       </el-date-picker>
+      <el-select
+        class="logs-head-select"
+        v-model="logsType"
+        placeholder="请选择日志类型"
+      >
+        <el-option
+          v-for="item in logs_options"
+          :key="item.value"
+          :label="item.label"
+          :value="item.value"
+        >
+        </el-option>
+      </el-select>
       <el-button
         class="logs-head-btn"
         type="success"
@@ -203,8 +216,23 @@ export default {
     return {
       user: "",
       logs_date: "",
-      dialogTableVisible: true,
+      dialogTableVisible: false,
       textarea2: "",
+      logsType: "",
+      logs_options: [
+        {
+          value: '选项1',
+          label: '行为日志'
+        },
+        {
+          value: '选项2',
+          label: '访问日志'
+        },
+        {
+          value: '选项3',
+          label: '错误日志'
+        }
+      ],
       tableData: [{
         time: "2023-05-22 15:43:21",
         name: "admin",
@@ -235,6 +263,9 @@ export default {
   display: flex;
   flex-direction: row;
   padding: 10px 0;
+}
+.logs-head-select {
+  margin-left: 10px;
 }
 .logs-head-input {
   width: 200px;
