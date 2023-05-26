@@ -42,10 +42,7 @@
         :data="tableData"
         tooltip-effect="dark"
         style="width: 100%"
-        @selection-change="handleSelectionChange"
       >
-        <el-table-column type="selection" width="55" align="center">
-        </el-table-column>
         <el-table-column prop="time" label="时间" width="200" align="center">
         </el-table-column>
         <el-table-column prop="name" label="用户名" width="100" align="center">
@@ -57,7 +54,7 @@
             </el-tag>
           </template>
         </el-table-column>
-        <el-table-column prop="ip" label="ip地址" align="center">
+        <el-table-column prop="host" label="ip地址" align="center">
         </el-table-column>
         <el-table-column prop="client" label="客户端" align="center">
         </el-table-column>
@@ -87,8 +84,8 @@
               <el-row type="flex">
                 <span class="dialog-info-item__label">用户名</span>
                 <el-input
-                  v-model="input"
-                  placeholder="请输入内容"
+                  v-model="info.username"
+                  placeholder="请输入用户名"
                   disabled
                 ></el-input>
               </el-row>
@@ -101,7 +98,7 @@
               <el-row type="flex" align="center">
                 <span class="dialog-info-item__label">IP地址</span
                 ><el-input
-                  v-model="input"
+                  v-model="info.host"
                   placeholder="请输入内容"
                   disabled
                 ></el-input>
@@ -111,7 +108,7 @@
               <el-row type="flex">
                 <span class="dialog-info-item__label">客户端</span
                 ><el-input
-                  v-model="input"
+                  v-model="info.client"
                   placeholder="请输入内容"
                   disabled
                 ></el-input>
@@ -126,7 +123,7 @@
               type="textarea"
               :autosize="{ minRows: 2, maxRows: 4 }"
               placeholder="请输入内容"
-              v-model="textarea2"
+              v-model="info.browser"
               disabled
             >
             </el-input>
@@ -136,7 +133,7 @@
           <el-row type="flex">
             <span class="dialog-info-item__label">服务名</span>
             <el-input
-              v-model="input"
+              v-model="info.service"
               placeholder="请输入服务名"
               disabled
             ></el-input>
@@ -148,7 +145,7 @@
               <el-row type="flex" align="center">
                 <span class="dialog-info-item__label">时间</span
                 ><el-input
-                  v-model="input"
+                  v-model="info.reportTime"
                   placeholder="请输入内容"
                   disabled
                 ></el-input>
@@ -158,7 +155,7 @@
               <el-row type="flex">
                 <span class="dialog-info-item__label">持续时间</span
                 ><el-input
-                  v-model="input"
+                  v-model="info.duration"
                   placeholder="请输入内容"
                   disabled
                 ></el-input>
@@ -173,7 +170,7 @@
               type="textarea"
               :autosize="{ minRows: 2, maxRows: 4 }"
               placeholder="请输入内容"
-              v-model="textarea2"
+              v-model="info.request"
               disabled
             >
             </el-input>
@@ -186,7 +183,7 @@
               type="textarea"
               :autosize="{ minRows: 2, maxRows: 4 }"
               placeholder="请输入内容"
-              v-model="textarea2"
+              v-model="info.response"
               disabled
             >
             </el-input>
@@ -199,7 +196,7 @@
               type="textarea"
               :autosize="{ minRows: 2, maxRows: 4 }"
               placeholder="请输入内容"
-              v-model="textarea2"
+              v-model="info.message"
               disabled
             >
             </el-input>
@@ -211,9 +208,22 @@
 </template>
 
 <script>
+import { GetLogsAPI } from '@/api/logs_api.js'
 export default {
   data () {
     return {
+      info: {
+        username: "",
+        host: "",
+        client: "",
+        browser: "",
+        service: "",
+        reportTime: "",
+        duration: '',
+        request: "",
+        response: "",
+        message: ""
+      },
       user: "",
       logs_date: "",
       dialogTableVisible: false,
@@ -233,24 +243,30 @@ export default {
           label: '错误日志'
         }
       ],
-      tableData: [{
-        time: "2023-05-22 15:43:21",
-        name: "admin",
-        service: "login",
-        ip: "127.0.0.1",
-        client: "谷歌浏览器",
-        browser: "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/237.84.2.178 Safari/537.36",
-      }, {
-        time: "2023-05-22 16:22:02",
-        name: "admin",
-        service: "createcatorea",
-        ip: "127.0.0.1",
-        client: "谷歌浏览器",
-        browser: "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/237.84.2.178 Safari/537.36",
-      }],
+      tableData: [],
     }
   },
+  mounted () {
+    this.getLogs()
+
+  },
   methods: {
+    async getLogs () {
+      const res = await GetLogsAPI()
+      const list = []
+      res.result.forEach(item => {
+        list.push({
+          time: item.reportTime,
+          name: item.username,
+          service: item.url,
+          host: item.host,
+          client: item.client,
+          browser: item.browser,
+        })
+      });
+      this.tableData = list
+      console.log('日志列表', list);
+    },
     handleOpenDialog () {
       this.dialogTableVisible = true
     }

@@ -54,16 +54,16 @@ export default {
       window.open(url, '_blank');
     },
     openDialog () {
-      this.$prompt('请输入魔法咒语', '提示', {
+      this.$prompt('请输入车牌号', '提示', {
         confirmButtonText: '确定',
         cancelButtonText: '取消',
         center: true,
-        inputErrorMessage: '魔法咒语错误'
+        inputErrorMessage: '车牌号错误'
       }).then(({ value }) => {
         //请求验证密码是否正确
         this.$message({
           type: 'success',
-          message: '你的咒语是: ' + value
+          message: '你的车牌号是: ' + value
         });
       }).catch(() => {
         this.$message({
