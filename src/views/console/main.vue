@@ -22,6 +22,10 @@
           <i class="el-icon-setting"></i>
           <span slot="title">系统设置</span>
         </el-menu-item>
+        <el-menu-item index="logs">
+          <i class="el-icon-date"></i>
+          <span slot="title">日志管理</span>
+        </el-menu-item>
         <el-submenu index="other">
           <template slot="title"
             ><i class="el-icon-message"></i>导航一</template
@@ -40,20 +44,20 @@
           </el-submenu>
         </el-submenu>
       </el-menu>
+      <!-- 侧边栏 -->
     </el-aside>
     <el-container>
+      <!-- 头部 -->
       <el-header style="text-align: right; font-size: 12px">
         <el-dropdown>
           <i class="el-icon-setting" style="margin-right: 15px"></i>
           <el-dropdown-menu slot="dropdown">
-            <el-dropdown-item>查看</el-dropdown-item>
-            <el-dropdown-item>新增</el-dropdown-item>
-            <el-dropdown-item>删除</el-dropdown-item>
+            <el-dropdown-item>个人中心</el-dropdown-item>
+            <el-dropdown-item>退出</el-dropdown-item>
           </el-dropdown-menu>
         </el-dropdown>
-        <span>王小虎</span>
+        <span>账号:admin</span>
       </el-header>
-
       <el-main>
         <!-- 面包屑 -->
         <el-breadcrumb separator-class="el-icon-arrow-right">

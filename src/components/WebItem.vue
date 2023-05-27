@@ -10,6 +10,7 @@
           src="@/assets/images/password.png"
           width="60"
           alt=""
+          @click="openDialog"
         />
       </div>
     </div>
@@ -52,6 +53,25 @@ export default {
     openweb (url) {
       window.open(url, '_blank');
     },
+    openDialog () {
+      this.$prompt('请输入车牌号', '提示', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        center: true,
+        inputErrorMessage: '车牌号错误'
+      }).then(({ value }) => {
+        //请求验证密码是否正确
+        this.$message({
+          type: 'success',
+          message: '你的车牌号是: ' + value
+        });
+      }).catch(() => {
+        this.$message({
+          type: 'info',
+          message: '取消输入'
+        });
+      });
+    }
   },
 };
 </script>
@@ -63,5 +83,6 @@ i {
 
 .password {
   text-align: center;
+  cursor: pointer;
 }
 </style>

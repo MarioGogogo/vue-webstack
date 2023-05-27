@@ -2,21 +2,27 @@
   <div class="links">
     <!-- 选择器 -->
     <div class="links-head">
-      <el-select
-        v-model="selectValue"
-        placeholder="请选择"
-        @change="handleSelectChange"
-      >
-        <el-option
-          v-for="item in options"
-          :key="item.label"
-          :label="item.label"
-          :value="item.label"
+      <el-row type="flex" class="row-bg" justify="space-between">
+        <el-select
+          v-model="selectValue"
+          placeholder="请选择"
+          @change="handleSelectChange"
         >
-        </el-option>
-      </el-select>
-      <el-button type="primary" @click="handleAdd">新增</el-button>
-      <el-button type="danger" @click="handleBatchDelete">批量删除</el-button>
+          <el-option
+            v-for="item in options"
+            :key="item.label"
+            :label="item.label"
+            :value="item.label"
+          >
+          </el-option>
+        </el-select>
+        <div>
+          <el-button type="primary" @click="handleAdd">新增</el-button>
+          <el-button type="danger" @click="handleBatchDelete"
+            >批量删除</el-button
+          >
+        </div>
+      </el-row>
     </div>
     <!-- 列表 -->
     <el-table
@@ -85,27 +91,23 @@
     >
       <div class="classify-edit">
         <div class="classify-edit-item">
-          <p>名称</p>
+          <p class="classify-edit-item__title">名称</p>
           <el-input v-model="editValue" placeholder="请输入名称"></el-input>
         </div>
         <div class="classify-edit-item">
-          <p>链接地址</p>
+          <p class="classify-edit-item__title">url地址</p>
           <el-input
             v-model="addressValue"
             placeholder="请输入链接地址"
           ></el-input>
         </div>
-        <!-- 描述 -->
-        <el-input
-          type="textarea"
-          :rows="2"
-          placeholder="请输入内容"
-          v-model="textarea"
-        >
-        </el-input>
         <div class="classify-edit-item">
-          <p>图标</p>
-          <el-select v-model="iconValue" placeholder="请选择">
+          <p class="classify-edit-item__title">图标</p>
+          <el-select
+            class="classify-edit-select"
+            v-model="iconValue"
+            placeholder="请选择"
+          >
             <el-option
               v-for="(item, index) in options"
               :key="index"
@@ -115,7 +117,20 @@
             </el-option>
           </el-select>
         </div>
-        <el-button type="primary" @click="handleSave">保存</el-button>
+        <!-- 描述 -->
+        <div class="classify-edit-item">
+          <el-input
+            type="textarea"
+            :rows="2"
+            placeholder="请输入内容"
+            v-model="textarea"
+          >
+          </el-input>
+        </div>
+
+        <el-button class="classify-edit-btn" type="primary" @click="handleSave"
+          >保存</el-button
+        >
       </div>
     </el-drawer>
   </div>
@@ -253,6 +268,9 @@ export default {
         cancelButtonText: '取消',
         type: 'warning'
       }).then(async () => {
+        if (this.multipleSelection.length === 0) {
+          return this.$message.error("请选择要删除的文件");
+        }
         const params = {
           ids: this.multipleSelection.map(item => item._id)
         }
@@ -301,5 +319,31 @@ export default {
 }
 </script>
 
-<style lang="scss" scoped>
+<style scoped>
+/deep/ #el-drawer__title span {
+  font-size: 20px;
+}
+.links-head {
+  padding: 10px 0;
+}
+.classify-edit {
+  padding: 10px;
+}
+.classify-edit-item {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  margin-bottom: 10px;
+}
+.classify-edit-item__title {
+  width: 20%;
+  font-size: 20px;
+}
+.classify-edit-select {
+  width: 100%;
+}
+.classify-edit-btn {
+  width: 100%;
+  font-size: 20px;
+}
 </style>

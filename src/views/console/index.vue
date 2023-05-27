@@ -48,7 +48,7 @@ export default {
           return this.$message.error(res.message);
         }
         this.$router.push({
-          path: "/main"
+          path: "/main/classify"
         })
       } catch (error) {
         console.log("%c Line:54 🍻 login---catch", "font-size:18px;color:#ffffff;background:#6666FF", error);
