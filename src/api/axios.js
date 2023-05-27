@@ -9,7 +9,7 @@ function myAxios(axiosConfig, customOptions) {
   const service = axios.create({
     baseURL: 'http://127.0.0.1:7001',
     //baseURL: 'http://43.134.241.119:7001', // 设置统一的请求前缀
-    timeout: 6000, // 设置统一的超时时长
+    timeout: 3000, // 设置统一的超时时长
   });
   // 自定义配置
   let custom_options = Object.assign(
@@ -48,8 +48,11 @@ function myAxios(axiosConfig, customOptions) {
       return custom_options.return_result_format ? response.data : response;
     },
     (error) => {
+      console.log('%c Line:51 👾 error', 'font-size:18px;color:#ffffff;background:#666699', error);
       error.config && removePending(error.config);
-      custom_options.loading && closeLoading(custom_options); // 关闭loading
+      custom_options.loading && closeLoading(custom_options);
+      // 关闭loading
+      console.log('%c Line:55 🙄 关闭loading', 'font-size:18px;color:#ffffff;background:#10ac84');
       custom_options.error_message_show && httpErrorStatusHandle(error); // 处理错误状态码
       return Promise.reject(error);
     }
@@ -123,7 +126,6 @@ function httpErrorStatusHandle(error) {
   // 处理被取消的请求
   if (axios.isCancel(error)) return console.error('请求的重复请求：' + error.message);
   let message = '';
-  console.log('%c Line:125 🥒 error.response.status', 'font-size:18px;color:#ffffff;background:#f368e0', error.response.status);
   if (error && error.response) {
     switch (error.response.status) {
       case 302:

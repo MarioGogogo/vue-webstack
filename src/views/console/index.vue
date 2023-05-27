@@ -50,9 +50,8 @@ export default {
         this.$router.push({
           path: "/main"
         })
-
       } catch (error) {
-        console.log("%c Line:49 🎂 error", "font-size:18px;color:#ffffff;background:#FFCCCC", error);
+        console.log("%c Line:54 🍻 login---catch", "font-size:18px;color:#ffffff;background:#6666FF", error);
       }
 
     },
