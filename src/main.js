@@ -1,5 +1,6 @@
 import Vue from 'vue';
 import App from './App.vue';
+
 import ElementUI from 'element-ui';
 import 'element-ui/lib/theme-chalk/index.css';
 import router from '@/router';
@@ -12,10 +13,14 @@ import './assets/css/xenon-core.css';
 import './assets/css/xenon-components.css';
 import './assets/css/xenon-skins.css';
 import './assets/css/nav.css';
+import 'echarts';
+import ECharts from 'vue-echarts';
+Vue.component('VChart', ECharts);
 
 Vue.config.productionTip = false;
-
+import store from './store';
 new Vue({
-  render: (h) => h(App),
   router,
+  store,
+  render: (h) => h(App),
 }).$mount('#app');

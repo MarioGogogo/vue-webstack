@@ -48,8 +48,11 @@ export default {
           return this.$message.error(res.message);
         }
         this.$router.push({
-          path: "/main/classify"
+          path: "/main"
         })
+        //做登录与退出时 ，需要清空路由
+        this.$store.state.openTab = [];
+        this.$store.state.activeIndex = '/main';
       } catch (error) {
         console.log("%c Line:54 🍻 login---catch", "font-size:18px;color:#ffffff;background:#6666FF", error);
       }
