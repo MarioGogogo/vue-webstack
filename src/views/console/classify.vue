@@ -5,6 +5,7 @@
       <el-button type="danger" @click="handleBatchDelete">批量删除</el-button>
     </div>
     <el-table
+      v-loading="loading"
       ref="multipleTable"
       :data="tableData"
       tooltip-effect="dark"
@@ -110,6 +111,7 @@ import { GetCategoryAPI, CreateCategoryAPI, UpdateCategoryAPI, DeleteCategoryAPI
 export default {
   data () {
     return {
+      loading: true,  //加载
       drawerTitle: "",
       visible: false,
       drawer: false,
@@ -155,7 +157,6 @@ export default {
       console.log("%c Line:149 🥶 获取类别", "font-size:18px;color:#ffffff;background:#6ec1c2", res);
       //转一下
       const data = []
-
       res.data.forEach(item => {
         data.push({
           id: item.category_seq,
@@ -165,6 +166,7 @@ export default {
         })
       })
       this.tableData = data
+      this.loading = false
     },
     //添加
     handleAdd () {

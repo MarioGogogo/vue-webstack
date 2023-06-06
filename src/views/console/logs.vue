@@ -38,6 +38,7 @@
     <!-- 列表 -->
     <div class="logs-table">
       <el-table
+        v-loading="loading"
         ref="multipleTable"
         :data="tableData"
         tooltip-effect="dark"
@@ -212,6 +213,7 @@ import { GetLogsAPI } from '@/api/logs_api.js'
 export default {
   data () {
     return {
+      loading: true,
       info: {
         username: "",
         host: "",
@@ -265,6 +267,7 @@ export default {
         })
       });
       this.tableData = list
+      this.loading = false
       console.log('日志列表', list);
     },
     handleOpenDialog () {

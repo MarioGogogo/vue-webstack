@@ -3,7 +3,7 @@ import VueRouter from 'vue-router';
 import Index from '@/views/index.vue';
 import About from '@/views/about.vue';
 import Console from '@/views/console/index.vue';
-import Main from '@/views/console/main.vue';
+// import Main from '@/views/console/main.vue';
 Vue.use(VueRouter);
 
 const originalPush = VueRouter.prototype.push;
@@ -15,11 +15,13 @@ VueRouter.prototype.push = function push(location) {
 const routes = [
   { path: '/', component: Index },
   { path: '/about', component: About },
-  { path: '/console', component: Console },
-
+  {
+    path: '/console',
+    component: Console,
+  },
   {
     path: '/main',
-    component: Main,
+    component: () => import(/* webpackChunkName: "console" */ '@/views/dashboard/index.vue'),
     redirect: '/main/console',
     children: [
       {
@@ -29,7 +31,7 @@ const routes = [
           title: '控制台',
         },
         components: {
-          table: () => import(/* webpackChunkName: "classify" */ '@/views/console/console.vue'),
+          table: () => import(/* webpackChunkName: "classify" */ '@/views/dashboard/index.vue'),
         },
       },
       {

@@ -1,14 +1,18 @@
 <template>
   <el-container style="height: 100vh">
-    <el-aside width="200px" style="background-color: #565c64">
+    <!-- 侧边栏 -->
+    <el-aside
+      class="main-el-aside"
+      :style="{ width: isCollapse ? '60px' : '200px' }"
+    >
       <!-- logo -->
       <div class="logo"></div>
-      <!-- 侧边栏 -->
       <el-menu
-        :default-openeds="['1', '3']"
+        :collapse="isCollapse"
         background-color="#565c64"
         text-color="#fff"
         :default-active="menuActive"
+        class="el-menu-vertical-demo"
         router
       >
         <el-menu-item index="/main">
@@ -27,14 +31,11 @@
           <i class="el-icon-setting"></i>
           <span slot="title">系统设置</span>
         </el-menu-item>
-        <!-- <el-menu-item index="logs">
-          <i class="el-icon-date"></i>
-          <span slot="title">日志管理</span>
-        </el-menu-item> -->
         <el-submenu index="logs">
-          <template slot="title"
-            ><i class="el-icon-message"></i>日志管理</template
-          >
+          <template slot="title">
+            <i class="el-icon-location"></i>
+            <span slot="title">日志管理</span>
+          </template>
           <el-menu-item index="/main/login-logs">
             <i class="el-icon-date"></i>
             <span slot="title">登录日志</span>
@@ -57,51 +58,41 @@
     </el-aside>
     <el-container>
       <!-- 头部 -->
-      <el-header style="text-align: right; font-size: 12px">
-        <el-dropdown>
-          <i class="el-icon-setting" style="margin-right: 15px"></i>
-          <el-dropdown-menu slot="dropdown">
-            <el-dropdown-item>个人中心</el-dropdown-item>
-            <el-dropdown-item>退出</el-dropdown-item>
-          </el-dropdown-menu>
-        </el-dropdown>
-        <span>账号:admin</span>
-      </el-header>
-      <el-main>
-        <!-- 动态tabs -->
-        <el-tabs
-          v-model="activeIndex"
-          type="card"
-          @tab-remove="removeTab"
-          @tab-click="handleTabsClick(editableTabsValue)"
-        >
-          <el-tab-pane
-            :key="item.name"
-            v-for="item in openTab"
-            :label="item.name"
-            :name="item.route"
-            :closable="item.closable"
-          >
-          </el-tab-pane>
-        </el-tabs>
-        <div class="layout-content-main">
-          <transition name="fade">
-            <router-view name="table" />
-          </transition>
+      <el-header class="main-el-header">
+        <i class="el-icon-s-fold" @click="isCollapse = !isCollapse"></i>
+        <div>
+          <el-dropdown>
+            <i class="el-icon-setting" style="margin-right: 15px"></i>
+            <el-dropdown-menu slot="dropdown">
+              <el-dropdown-item>个人中心</el-dropdown-item>
+              <el-dropdown-item>退出</el-dropdown-item>
+            </el-dropdown-menu>
+          </el-dropdown>
+          <span>账号:admin</span>
         </div>
-        <!-- 面包屑 -->
-        <!-- <el-breadcrumb separator-class="el-icon-arrow-right">
-          <el-breadcrumb-item :to="{ path: '/' }">首页</el-breadcrumb-item>
-          <el-breadcrumb-item v-if="nav_title">{{
-            nav_title
-          }}</el-breadcrumb-item>
-          <el-breadcrumb-item>{{ $route.meta.title }}</el-breadcrumb-item>
-       
-        </el-breadcrumb> -->
-        <!-- 内容区域 -->
-        <!-- <div class="layout-content-main">
-          <router-view name="table"></router-view>
-        </div> -->
+      </el-header>
+      <!-- 动态tabs -->
+      <el-tabs
+        v-model="activeIndex"
+        type="card"
+        @tab-remove="removeTab"
+        @tab-click="handleTabsClick(editableTabsValue)"
+      >
+        <el-tab-pane
+          :key="item.name"
+          v-for="item in openTab"
+          :label="item.name"
+          :name="item.route"
+          :closable="item.closable"
+        >
+        </el-tab-pane>
+      </el-tabs>
+      <el-main>
+        <transition name="fade-transform" mode="out-in">
+          <keep-alive :include="cachedViews">
+            <router-view name="table"></router-view>
+          </keep-alive>
+        </transition>
       </el-main>
       <el-footer>Footer</el-footer>
     </el-container>
@@ -114,9 +105,11 @@
 export default {
   data () {
     return {
+      isCollapse: false, //收缩 展开
       nav_title: "",
       tabIndex: 1,
-      menuActive: ""
+      menuActive: "",
+      cachedViews: []
     }
   },
   mounted () {
@@ -211,7 +204,56 @@ export default {
 
 
 
-<style scoped>
+<style>
+/* fade */
+.fade-enter-active,
+.fade-leave-active {
+  transition: opacity 0.28s;
+}
+
+.fade-enter,
+.fade-leave-active {
+  opacity: 0;
+}
+
+/* fade-transform */
+.fade-transform-leave-active,
+.fade-transform-enter-active {
+  transition: all 0.5s;
+}
+
+.fade-transform-enter {
+  opacity: 0;
+  transform: translateX(-30px);
+}
+
+.fade-transform-leave-to {
+  opacity: 0;
+  transform: translateX(30px);
+}
+/* fade */
+.main-el-aside {
+  transition: 0.4s;
+  background: #575c64;
+}
+/* 关键，必须加上，否则在折叠时会出现第一个文字卡顿后消失 */
+.el-menu:not(.el-menu--collapse) {
+  width: 100%;
+}
+.el-menu-vertical-demo:not(.el-menu--collapse) {
+  width: 200px;
+  min-height: 400px;
+}
+
+.el-header {
+  padding-top: 1%;
+  background-color: #d1dfff;
+  display: flex;
+  justify-content: space-between;
+}
+.el-menu {
+  border: none;
+}
 .el-main {
   padding: 0;
 }
@@ -220,10 +262,6 @@ export default {
   background-color: #fff;
   color: #333;
   line-height: 60px;
-}
-
-.el-main {
-  flex: 1;
 }
 
 .el-footer {
@@ -242,5 +280,15 @@ export default {
 }
 .layout-content-main {
   padding: 10px;
+}
+
+.main-el-header {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: center;
+}
+.el-icon-s-fold {
+  font-size: 22px;
 }
 </style>

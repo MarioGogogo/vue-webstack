@@ -17,7 +17,7 @@ function myAxios(axiosConfig, customOptions) {
       error_message_show: true, // 是否开启接口错误信息展示，默认为true
       repeat_request_cancel: true, // 是否开启取消重复请求, 默认为 true
       return_result_format: true, // 是否开启返回结果格式化
-      loading: true, // 是否开启loading层效果, 默认为true 开启状态
+      loading: false, // 是否开启loading层效果, 默认为true 开启状态
     },
     customOptions
   );

@@ -29,7 +29,9 @@
     "file-loader": "^6.2.0",
     "style-loader": "^2.0.0",
     "vue-template-compiler": "^2.6.11",
-    "webpack": "^5.4.0"
+    "webpack": "^5.4.0",
+    "sass": "~1.26.5",
+    "sass-loader": "^8.0.2"
   },
   "eslintConfig": {
     "root": true,
