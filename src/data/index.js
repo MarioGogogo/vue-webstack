@@ -1,5 +1,5 @@
 export const logs_options = {
-  color: '#5470C6',
+  color: '#6046d7',
   legend: {},
   grid: {
     top: 50,
@@ -20,7 +20,7 @@ export const logs_options = {
       axisLine: {
         onZero: false,
         lineStyle: {
-          color: '#5470C6',
+          color: '#6046d7',
         },
       },
       boundaryGap: false,
@@ -59,11 +59,11 @@ export const logs_options = {
           colorStops: [
             {
               offset: 0,
-              color: '#409eff', // 0% 处的颜色
+              color: '#6045d733', // 0% 处的颜色
             },
             {
               offset: 1,
-              color: '#e0edfe', // 100% 处的颜色
+              color: '#fdfcfe', // 100% 处的颜色
             },
           ],
           global: false, // 缺省为 false

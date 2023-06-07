@@ -31,7 +31,7 @@ const routes = [
           title: '控制台',
         },
         components: {
-          table: () => import(/* webpackChunkName: "classify" */ '@/views/dashboard/index.vue'),
+          table: () => import(/* webpackChunkName: "classify" */ '@/views/console/console.vue'),
         },
       },
       {

@@ -6,7 +6,7 @@
         <Header />
       </el-header>
       <el-main>
-        <Console />
+        <Main />
       </el-main>
       <el-footer>
         <Footer />
@@ -19,14 +19,14 @@
 import Footer from './Footer/index.vue'
 import Header from './Header/index.vue'
 import Sidebar from './Sidebar/index.vue'
-import Console from '@/views/console/console.vue'
+import Main from './Main/index.vue'
 export default {
   name: "dashboard",
   components: {
     Header,
     Sidebar,
     Footer,
-    Console
+    Main
   }
 }
 </script>
@@ -37,15 +37,10 @@ export default {
 }
 .el-aside {
   background-color: #2c2c3e;
-  color: #b4bfcc;
-  text-align: center;
   line-height: 200px;
 }
-.el-header {
-  background-color: #fff;
-}
 .el-main {
-  background: #ecf0fa;
+  padding: 0;
 }
 .el-footer {
   background-color: #fff;

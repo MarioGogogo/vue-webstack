@@ -58,6 +58,7 @@
       </el-col>
       <el-col :span="8">
         <div class="grid-updatelogs-item">
+          <p>更新日志</p>
           <el-timeline>
             <el-timeline-item
               v-for="(activity, index) in activities"
@@ -215,6 +216,8 @@ export default {
   justify-content: space-between;
 }
 .grid-updatelogs-item {
+  display: flex;
+  flex-direction: columns;
   margin-top: 20px;
   box-shadow: 0 2px 12px 0 rgba(0, 0, 0, 0.1);
   border-radius: 10px;
@@ -228,7 +231,6 @@ export default {
   height: 580px;
   padding: 10px;
   display: flex;
-  flex-direction: row;
   justify-content: space-between;
 }
 .grid-item p {

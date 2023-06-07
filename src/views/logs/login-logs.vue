@@ -44,14 +44,14 @@
         tooltip-effect="dark"
         style="width: 100%"
       >
-        <el-table-column prop="name" label="用户名" width="200" align="center">
+        <el-table-column label="ID" width="100" align="center">
+          <template slot-scope="scope">
+            {{ scope.row.id.slice(-8) }}
+          </template>
         </el-table-column>
-        <el-table-column
-          prop="host"
-          label="登录地址"
-          width="100"
-          align="center"
-        >
+        <el-table-column prop="name" label="用户名" width="100" align="center">
+        </el-table-column>
+        <el-table-column prop="host" label="登录IP" width="140" align="center">
         </el-table-column>
         <el-table-column prop="address" label="登录地点" align="center">
         </el-table-column>
@@ -71,6 +71,20 @@
         <el-table-column prop="loginTime" label="登录日期" align="center">
         </el-table-column>
       </el-table>
+    </div>
+    <!-- 多页 -->
+    <div class="logs-pagination">
+      <el-pagination
+        background
+        @current-change="handleCurrentChange"
+        :current-page.sync="currentPage"
+        :page-size="10"
+        :prev-text="'上一页'"
+        :next-text="'下一页'"
+        layout="total, prev, pager, next"
+        :total="total"
+      >
+      </el-pagination>
     </div>
     <!-- 详情弹窗 -->
     <el-dialog title="查看信息" :visible.sync="dialogTableVisible">
@@ -239,6 +253,8 @@ export default {
         }
       ],
       tableData: [],
+      currentPage: 1,
+      total: 0
     }
   },
   mounted () {
@@ -247,10 +263,14 @@ export default {
   },
   methods: {
     async getLogs () {
-      const res = await GetLoginLogsAPI()
+      const params = {
+        page: this.currentPage,
+      }
+      const res = await GetLoginLogsAPI(params)
       const list = []
-      res.result.forEach(item => {
+      res.result.data.forEach(item => {
         list.push({
+          id: item._id,
           name: item.username,
           host: item.host,
           address: item.address,
@@ -262,32 +282,56 @@ export default {
         })
       });
       this.tableData = list
+      this.total = res.result.total
       this.loading = false
       console.log('日志列表', list);
     },
     handleOpenDialog () {
       this.dialogTableVisible = true
+    },
+
+    handleCurrentChange (page) {
+      console.log('当前页', page);
+      this.currentPage = page
+      this.getLogs()
     }
   }
 }
 </script>
 
-<style scoped>
-.logs-head {
+<style lang="scss" scoped>
+.logs {
+  width: 100%;
+  height: 100%;
   display: flex;
-  flex-direction: row;
-  padding: 10px 0;
+  flex-direction: column;
+  .logs-head {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    height: 60px;
+    .logs-head-select {
+      margin-left: 10px;
+    }
+    .logs-head-input {
+      width: 200px;
+      margin-right: 10px;
+    }
+    .logs-head-btn {
+      margin-left: 10px;
+    }
+  }
+  .logs-table {
+    flex: 1;
+  }
+  .logs-pagination {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
+  }
 }
-.logs-head-select {
-  margin-left: 10px;
-}
-.logs-head-input {
-  width: 200px;
-  margin-right: 10px;
-}
-.logs-head-btn {
-  margin-left: 10px;
-}
+
 .logs-table__borwser {
   /*文字最多显示二行 */
   display: -webkit-box; /* 设置为基于 WebKit 的盒子模型 */
