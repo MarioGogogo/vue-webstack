@@ -1,5 +1,6 @@
 <template>
   <div class="logs">
+    <!-- 头部 -->
     <div class="logs-head">
       <el-input
         class="logs-head-input"
@@ -38,6 +39,7 @@
     <!-- 列表 -->
     <div class="logs-table">
       <el-table
+        class="logs-table-list"
         ref="multipleTable"
         :data="tableData"
         tooltip-effect="dark"
@@ -74,6 +76,21 @@
           </template>
         </el-table-column>
       </el-table>
+      <!-- 分页 -->
+      <div class="table-pagination">
+        <el-pagination
+          background
+          :current-page="currentPage"
+          prev-text="上一页"
+          next-text="下一页"
+          layout="prev, pager, next"
+          :total="total"
+          @current-change="handleCurrentChange"
+          @prev-click="handlePrevClick"
+          @next-click="handleNextClick"
+        >
+        </el-pagination>
+      </div>
     </div>
     <!-- 详情弹窗 -->
     <el-dialog title="查看信息" :visible.sync="dialogTableVisible">
@@ -212,6 +229,8 @@ import { GetLogsAPI } from '@/api/logs_api.js'
 export default {
   data () {
     return {
+      currentPage: 1, // 当前页码
+      total: 0, // 数据总数
       info: {
         username: "",
         host: "",
@@ -252,10 +271,14 @@ export default {
   },
   methods: {
     async getLogs () {
-      const res = await GetLogsAPI()
-      const list = []
-      res.result.forEach(item => {
-        list.push({
+      const params = {
+        page: this.currentPage,
+      }
+      const res = await GetLogsAPI(params)
+      const data = []
+      const { list, count } = res.result
+      list.forEach(item => {
+        data.push({
           time: item.reportTime,
           name: item.username,
           service: item.url,
@@ -264,17 +287,41 @@ export default {
           browser: item.browser,
         })
       });
-      this.tableData = list
-      console.log('日志列表', list);
+      this.total = count
+      this.tableData = data
+      console.log('日志列表', data);
+    },
+    // 跳转到指定页码
+    goToPage (page) {
+      // 更新当前页码
+      this.currentPage = page;
+      // 加载数据
+      this.getLogs();
     },
     handleOpenDialog () {
       this.dialogTableVisible = true
+    },
+    handleCurrentChange (val) {
+      this.currentPage = val
+      this.getLogs()
+    },
+    handlePrevClick () {
+      this.currentPage--
+    },
+    handleNextClick () {
+      this.currentPage++
     }
   }
 }
 </script>
 
 <style scoped>
+.el-table::before {
+  content: '';
+  position: absolute;
+  background-color: #fff; /* 底部颜色 */
+  z-index: 1;
+}
 .logs-head {
   display: flex;
   flex-direction: row;
@@ -289,6 +336,20 @@ export default {
 }
 .logs-head-btn {
   margin-left: 10px;
+}
+.logs-table-list {
+  height: calc(100vh - 280px);
+  border-bottom: none;
+}
+.logs-table {
+  /* background: saddlebrown; */
+}
+.table-pagination {
+  height: 40px;
+  display: flex;
+  background: #fff;
+  align-items: center;
+  justify-content: flex-end;
 }
 .logs-table__borwser {
   /*文字最多显示二行 */

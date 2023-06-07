@@ -129,6 +129,6 @@ export default {
   background: #b3c0d1;
 }
 .layout-content-main {
-  padding: 10px;
+  /* padding: 10px; */
 }
 </style>
