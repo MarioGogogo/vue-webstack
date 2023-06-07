@@ -253,15 +253,15 @@ export default {
       logs_options: [
         {
           value: '选项1',
-          label: '行为日志'
+          label: 'js错误日志'
         },
         {
           value: '选项2',
-          label: '访问日志'
+          label: 'promise错误日志'
         },
         {
           value: '选项3',
-          label: '错误日志'
+          label: 'vue错误日志'
         }
       ],
       tableData: [],

@@ -253,15 +253,11 @@ export default {
       logs_options: [
         {
           value: '选项1',
-          label: '行为日志'
+          label: '超时日志'
         },
         {
           value: '选项2',
-          label: '访问日志'
-        },
-        {
-          value: '选项3',
-          label: '错误日志'
+          label: '请求方法错误日志'
         }
       ],
       tableData: [],
@@ -275,7 +271,7 @@ export default {
     async getLogs () {
       const params = {
         page: this.currentPage,
-        type: "error"
+        type: "xhr"
       }
       const res = await GetLogsAPI(params)
       let list = []

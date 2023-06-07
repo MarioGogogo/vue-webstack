@@ -81,7 +81,7 @@ const routes = [
           title: '错误日志',
         },
         components: {
-          table: () => import(/* webpackChunkName: "setting" */ '@/views/console/logs.vue'),
+          table: () => import(/* webpackChunkName: "setting" */ '@/views/logs/error-logs.vue'),
         },
       },
       {
@@ -101,7 +101,7 @@ const routes = [
           title: '操作日志',
         },
         components: {
-          table: () => import(/* webpackChunkName: "setting" */ '@/views/console/logs.vue'),
+          table: () => import(/* webpackChunkName: "setting" */ '@/views/logs/action-logs.vue'),
         },
       },
     ],
