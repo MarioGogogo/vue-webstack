@@ -244,16 +244,16 @@ export default {
   width: 200px;
   min-height: 400px;
 }
-
+.el-menu {
+  border: none;
+}
 .el-header {
   padding-top: 1%;
   background-color: #d1dfff;
   display: flex;
   justify-content: space-between;
 }
-.el-menu {
-  border: none;
-}
+
 .el-main {
   padding: 0;
 }

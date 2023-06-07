@@ -7,6 +7,7 @@ export default new Vuex.Store({
   state: {
     openTab: [], //所有打开的路由
     activeIndex: '/main', //激活状态
+    isCollapse: false, //是否收缩 侧边栏
   },
   mutations: {
     // 添加tabs
@@ -27,6 +28,11 @@ export default new Vuex.Store({
     // 设置当前激活的tab
     set_active_index(state, index) {
       this.state.activeIndex = index;
+    },
+    //改变侧边栏
+    change_isCollapse(state, isCollapse) {
+      isCollapse = this.state.isCollapse;
+      this.state.isCollapse = !isCollapse;
     },
   },
 });

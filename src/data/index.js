@@ -2,8 +2,8 @@ export const logs_options = {
   color: '#5470C6',
   legend: {},
   grid: {
-    top: 30,
-    bottom: 20,
+    top: 50,
+    bottom: 40,
   },
   tooltip: {
     trigger: 'none',

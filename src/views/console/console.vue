@@ -2,44 +2,75 @@
   <div class="console">
     <el-row :gutter="20">
       <el-col :span="6">
-        <div class="grid-item">
-          <p>日志记录</p>
+        <div class="grid-item one-item">
+          <p>错误日志</p>
           <p>29000条</p>
         </div>
       </el-col>
       <el-col :span="6">
-        <div class="grid-item">
-          <p>日志记录</p>
+        <div class="grid-item two-item">
+          <p>操作日志</p>
           <p>29000条</p>
         </div></el-col
       >
       <el-col :span="6">
-        <div class="grid-item">
-          <p>登录次数</p>
+        <div class="grid-item three-item">
+          <p>登录日志</p>
           <p>9123条</p>
         </div></el-col
       >
       <el-col :span="6">
-        <div class="grid-item">
-          <p>数据库统计</p>
-          <p>400.88MB</p>
+        <div class="grid-item four-item">
+          <p>性能日志</p>
+          <p>400条</p>
         </div></el-col
       >
     </el-row>
     <el-row :gutter="20">
-      <el-col :span="8">
-        <div class="grid-item">
-          <v-chart :option="logs_options" style="height: 200px"></v-chart>
+      <el-col :span="16">
+        <div class="grid-chart-item">
+          <v-chart
+            :option="logs_options"
+            style="width: 100%; height: 300px"
+          ></v-chart>
         </div>
       </el-col>
       <el-col :span="8">
-        <div class="grid-item">
-          <v-chart :option="circle_options" style="height: 200px"></v-chart>
+        <div class="grid-chart-item">
+          <v-chart
+            :option="option_column"
+            style="width: 100%; height: 300px"
+          ></v-chart>
+        </div>
+      </el-col>
+    </el-row>
+    <el-row :gutter="20">
+      <el-col :span="8">
+        <div class="grid-chart-item">
+          <v-chart
+            :option="circle_options"
+            style="width: 100%; height: 300px"
+          ></v-chart>
         </div>
       </el-col>
       <el-col :span="8">
-        <div class="grid-item">
-          <v-chart :option="option_column" style="height: 200px"></v-chart>
+        <div class="grid-chart-item"></div>
+      </el-col>
+      <el-col :span="8">
+        <div class="grid-updatelogs-item">
+          <el-timeline>
+            <el-timeline-item
+              v-for="(activity, index) in activities"
+              :key="index"
+              :icon="activity.icon"
+              :type="activity.type"
+              :color="activity.color"
+              :size="activity.size"
+              :timestamp="activity.timestamp"
+            >
+              {{ activity.content }}
+            </el-timeline-item>
+          </el-timeline>
         </div>
       </el-col>
     </el-row>
@@ -55,7 +86,7 @@ export default {
       logs_options: logs_options,
       circle_options: {
         legend: {
-          top: 'bottom'
+          top: 'top'
         },
         tooltip: {
           trigger: "axis",
@@ -67,8 +98,8 @@ export default {
           {
             name: '日志记录',
             type: 'pie',
-            radius: [5, 60],
-            center: ['50%', '40%'],
+            radius: [10, 90],
+            center: ['50%', '50%'],
             roseType: 'area',
             itemStyle: {
               borderRadius: 4
@@ -87,7 +118,6 @@ export default {
         ]
       },
       option_column: {
-        title: { text: "登录区域" },
         xAxis: {
           data: ["衬衫", "羊毛衫", "雪纺衫", "裤子", "高跟鞋", "袜子"],
         },
@@ -106,21 +136,39 @@ export default {
           },
         },
         grid: {
-          left: "2.8%",
+          left: "5.8%",
           right: "0.5%",
-          bottom: "6%",
+          bottom: "12%",
         },
       },
+      activities: [{
+        content: '支持使用图标',
+        timestamp: '2018-04-12 20:46',
+        size: 'large',
+        type: 'primary',
+        icon: 'el-icon-more'
+      }, {
+        content: '支持自定义颜色',
+        timestamp: '2018-04-03 20:46',
+        color: '#0bbd87'
+      }, {
+        content: '支持自定义尺寸',
+        timestamp: '2018-04-03 20:46',
+        size: 'large'
+      }, {
+        content: '默认样式的节点',
+        timestamp: '2018-04-03 20:46'
+      }]
 
     }
   },
 }
 </script>
 
-<style  scoped>
+<style lang="scss" scoped>
 .grid-item {
   box-shadow: 0 2px 12px 0 rgba(0, 0, 0, 0.1);
-  border-radius: 4px;
+  border-radius: 10px;
   border: 1px solid #ebeef5;
   background-color: #fff;
   overflow: hidden;
@@ -129,12 +177,62 @@ export default {
   transition: 0.3s;
   box-sizing: border-box;
   padding: 20px 10px;
+  height: 140px;
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  &.one-item {
+    background: linear-gradient(to right, #5b46c0, #6f59cc);
+  }
+  &.two-item {
+    background: linear-gradient(to right, #47bd2a, #7bdc4e);
+  }
+  &.three-item {
+    background: linear-gradient(to right, #ff8a32, #ffb051);
+  }
+  &.four-item {
+    background: linear-gradient(to right, #385dea, #5c7aec);
+  }
+  &:hover {
+    scale: 1.1;
+  }
+}
+.grid-chart-item {
+  margin-top: 20px;
+  box-shadow: 0 2px 12px 0 rgba(0, 0, 0, 0.1);
+  border-radius: 10px;
+  border: 1px solid #ebeef5;
+  background-color: #fff;
+  overflow: hidden;
+  color: #303133;
+  -webkit-transition: 0.3s;
+  transition: 0.3s;
+  box-sizing: border-box;
+  height: 300px;
+  padding: 10px;
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+}
+.grid-updatelogs-item {
+  margin-top: 20px;
+  box-shadow: 0 2px 12px 0 rgba(0, 0, 0, 0.1);
+  border-radius: 10px;
+  border: 1px solid #ebeef5;
+  background-color: #fff;
+  overflow: hidden;
+  color: #303133;
+  -webkit-transition: 0.3s;
+  transition: 0.3s;
+  box-sizing: border-box;
+  height: 580px;
+  padding: 10px;
   display: flex;
   flex-direction: row;
   justify-content: space-between;
 }
 .grid-item p {
-  color: #409eff;
+  color: #fff;
   font-size: 1.5em;
 }
 </style>
