@@ -15,3 +15,19 @@ export function GetLogsAPI(params) {
     ],
   });
 }
+
+export function GetLoginLogsAPI(params) {
+  return myAxios({
+    url: '/readloginlogs',
+    method: 'post',
+    data: params,
+    headers: {
+      'Content-Type': 'application/x-www-form-urlencoded',
+    },
+    transformRequest: [
+      (data) => {
+        return qs.stringify(data);
+      },
+    ],
+  });
+}

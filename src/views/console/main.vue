@@ -1,75 +1,98 @@
 <template>
   <el-container style="height: 100vh">
-    <el-aside width="200px" style="background-color: #565c64">
+    <!-- 侧边栏 -->
+    <el-aside
+      class="main-el-aside"
+      :style="{ width: isCollapse ? '60px' : '200px' }"
+    >
       <!-- logo -->
       <div class="logo"></div>
-      <!-- 侧边栏 -->
       <el-menu
-        :default-openeds="['1', '3']"
+        :collapse="isCollapse"
         background-color="#565c64"
         text-color="#fff"
-        @select="onSelect"
+        :default-active="menuActive"
+        class="el-menu-vertical-demo"
+        router
       >
-        <el-menu-item index="classify">
+        <el-menu-item index="/main">
+          <i class="el-icon-s-grid"></i>
+          <span slot="title">控制台</span>
+        </el-menu-item>
+        <el-menu-item index="/main/classify">
           <i class="el-icon-s-grid"></i>
           <span slot="title">分类管理</span>
         </el-menu-item>
-        <el-menu-item index="links">
+        <el-menu-item index="/main/links">
           <i class="el-icon-attract"></i>
           <span slot="title">链接列表</span>
         </el-menu-item>
-        <el-menu-item index="setting">
+        <el-menu-item index="/main/setting">
           <i class="el-icon-setting"></i>
           <span slot="title">系统设置</span>
         </el-menu-item>
-        <el-menu-item index="logs">
-          <i class="el-icon-date"></i>
-          <span slot="title">日志管理</span>
-        </el-menu-item>
-        <el-submenu index="other">
-          <template slot="title"
-            ><i class="el-icon-message"></i>导航一</template
-          >
-          <el-menu-item-group>
-            <template slot="title">分组一</template>
-            <el-menu-item index="1-1">选项1</el-menu-item>
-            <el-menu-item index="1-2">选项2</el-menu-item>
-          </el-menu-item-group>
-          <el-menu-item-group title="分组2">
-            <el-menu-item index="1-3">选项3</el-menu-item>
-          </el-menu-item-group>
-          <el-submenu index="1-4">
-            <template slot="title">选项4</template>
-            <el-menu-item index="1-4-1">选项4-1</el-menu-item>
-          </el-submenu>
+        <el-submenu index="logs">
+          <template slot="title">
+            <i class="el-icon-location"></i>
+            <span slot="title">日志管理</span>
+          </template>
+          <el-menu-item index="/main/login-logs">
+            <i class="el-icon-date"></i>
+            <span slot="title">登录日志</span>
+          </el-menu-item>
+          <el-menu-item index="/main/error-logs">
+            <i class="el-icon-date"></i>
+            <span slot="title">错误日志</span>
+          </el-menu-item>
+          <el-menu-item index="/main/performance-logs">
+            <i class="el-icon-date"></i>
+            <span slot="title">性能日志</span>
+          </el-menu-item>
+          <el-menu-item index="/main/action-logs">
+            <i class="el-icon-date"></i>
+            <span slot="title">操作日志</span>
+          </el-menu-item>
         </el-submenu>
       </el-menu>
       <!-- 侧边栏 -->
     </el-aside>
     <el-container>
       <!-- 头部 -->
-      <el-header style="text-align: right; font-size: 12px">
-        <el-dropdown>
-          <i class="el-icon-setting" style="margin-right: 15px"></i>
-          <el-dropdown-menu slot="dropdown">
-            <el-dropdown-item>个人中心</el-dropdown-item>
-            <el-dropdown-item>退出</el-dropdown-item>
-          </el-dropdown-menu>
-        </el-dropdown>
-        <span>账号:admin</span>
-      </el-header>
-      <el-main>
-        <!-- 面包屑 -->
-        <el-breadcrumb separator-class="el-icon-arrow-right">
-          <el-breadcrumb-item :to="{ path: '/' }">首页</el-breadcrumb-item>
-          <el-breadcrumb-item>{{ $route.meta.title }}</el-breadcrumb-item>
-          <!-- <el-breadcrumb-item>活动列表</el-breadcrumb-item>
-          <el-breadcrumb-item>活动详情</el-breadcrumb-item> -->
-        </el-breadcrumb>
-        <!-- 内容区域 -->
-        <div class="layout-content-main">
-          <router-view name="table"></router-view>
+      <el-header class="main-el-header">
+        <i class="el-icon-s-fold" @click="isCollapse = !isCollapse"></i>
+        <div>
+          <el-dropdown>
+            <i class="el-icon-setting" style="margin-right: 15px"></i>
+            <el-dropdown-menu slot="dropdown">
+              <el-dropdown-item>个人中心</el-dropdown-item>
+              <el-dropdown-item>退出</el-dropdown-item>
+            </el-dropdown-menu>
+          </el-dropdown>
+          <span>账号:admin</span>
         </div>
+      </el-header>
+      <!-- 动态tabs -->
+      <el-tabs
+        v-model="activeIndex"
+        type="card"
+        @tab-remove="removeTab"
+        @tab-click="handleTabsClick(editableTabsValue)"
+      >
+        <el-tab-pane
+          :key="item.name"
+          v-for="item in openTab"
+          :label="item.name"
+          :name="item.route"
+          :closable="item.closable"
+        >
+        </el-tab-pane>
+      </el-tabs>
+      <el-main>
+        <transition name="fade-transform" mode="out-in">
+          <keep-alive :include="cachedViews">
+            <router-view name="table"></router-view>
+          </keep-alive>
+        </transition>
       </el-main>
       <el-footer>Footer</el-footer>
     </el-container>
@@ -81,37 +104,164 @@
 <script>
 export default {
   data () {
-    const item = {
-      date: '2016-05-02',
-      name: '王小虎',
-      address: '上海市普陀区金沙江路 1518 弄'
-    };
     return {
-      tableData: Array(20).fill(item)
+      isCollapse: false, //收缩 展开
+      nav_title: "",
+      tabIndex: 1,
+      menuActive: "",
+      cachedViews: []
+    }
+  },
+  mounted () {
+    this.menuActive = "console"
+    // 刷新时以当前路由做为tab加入tabs
+    // 当前路由不是首页时，添加首页以及另一页到store里，并设置激活状态
+    // 当当前路由是首页时，添加首页到store，并设置激活状态
+
+    console.log("%c Line:128 🥝 this.$route.path", "font-size:18px;color:#ffffff;background:#FF9966", this.$route);
+    const pageName = this.$route.meta.title
+    if (this.$route.path !== '/' && this.$route.path !== '/main/console') {
+      console.log('1');
+      this.$store.commit('add_tabs', { route: '/main/console', name: pageName, closable: false });
+      this.$store.commit('add_tabs', { route: this.$route.path, name: this.$route.name, closable: true });
+      this.$store.commit('set_active_index', this.$route.path);
+    } else {
+      console.log('2');
+      this.$store.commit('add_tabs', { route: '/main/console', name: pageName, closable: false });
+      this.$store.commit('set_active_index', '/main/console');
+      this.$router.push('/main');
+    }
+  },
+  computed: {
+    openTab () {
+      return this.$store.state.openTab;
+    },
+    activeIndex: {
+      get () {
+        return this.$store.state.activeIndex;
+      },
+      set (val) {
+        this.$store.commit('set_active_index', val);
+      }
     }
   },
   methods: {
-    onSelect (key) {
-      console.log("%c Line:71 🍉 key", "font-size:18px;color:#ffffff;background:#1dd1a1", key);
-      this.$router.push({
-        path: "/main/" + key
-      })
+    handleTabsClick (tab) {
+      console.log("%c Line:136 🍩 tab", "font-size:18px;color:#ffffff;background:#6666FF", tab);
+      console.log("tab", tab);
+      console.log('active', this.activeIndex);
+      this.$router.push({ path: this.activeIndex });
+    },
+    removeTab (targetName) {
+      console.log("tabRemove", targetName);
+      //首页不删
+      if (targetName == '/main/console') {
+        return
+      }
+      this.$store.commit('delete_tabs', targetName);
+      if (this.activeIndex === targetName) {
+        // 设置当前激活的路由
+        if (this.openTab && this.openTab.length >= 1) {
+          console.log('=============', this.openTab[this.openTab.length - 1].route)
+          this.$store.commit('set_active_index', this.openTab[this.openTab.length - 1].route);
+          this.$router.push({ path: this.activeIndex });
+        } else {
+          this.$router.push({ path: '/main/console' });
+        }
+      }
+    }
+  },
+  watch: {
+    '$route' (to) {
+      console.log("%c Line:180 ❤️‍🔥❤️‍🔥 to", "font-size:18px;color:#ffffff;background:#6ec1c2", to);
+      //判断路由是否已经打开
+      //已经打开的 ，将其置为active
+      //未打开的，将其放入队列里
+      const pageName = to.meta.title
+      let flag = false;
+      for (let item of this.openTab) {
+        console.log("item.name", item.name)
+        console.log("t0.name", pageName)
+        if (item.name === pageName) {
+          console.log('to.path', to.path);
+          this.$store.commit('set_active_index', to.path)
+          flag = true;
+          break;
+        }
+      }
+
+      if (!flag) {
+        console.log('to.path', to.path);
+        this.$store.commit('add_tabs', { route: to.path, name: pageName, closable: true });
+        this.$store.commit('set_active_index', to.path);
+      }
+
     }
   }
+
 };
 </script>
 
 
 
-<style scoped>
+<style>
+/* fade */
+.fade-enter-active,
+.fade-leave-active {
+  transition: opacity 0.28s;
+}
+
+.fade-enter,
+.fade-leave-active {
+  opacity: 0;
+}
+
+/* fade-transform */
+.fade-transform-leave-active,
+.fade-transform-enter-active {
+  transition: all 0.5s;
+}
+
+.fade-transform-enter {
+  opacity: 0;
+  transform: translateX(-30px);
+}
+
+.fade-transform-leave-to {
+  opacity: 0;
+  transform: translateX(30px);
+}
+/* fade */
+.main-el-aside {
+  transition: 0.4s;
+  background: #575c64;
+}
+/* 关键，必须加上，否则在折叠时会出现第一个文字卡顿后消失 */
+.el-menu:not(.el-menu--collapse) {
+  width: 100%;
+}
+.el-menu-vertical-demo:not(.el-menu--collapse) {
+  width: 200px;
+  min-height: 400px;
+}
+.el-menu {
+  border: none;
+}
+.el-header {
+  padding-top: 1%;
+  background-color: #d1dfff;
+  display: flex;
+  justify-content: space-between;
+}
+
+.el-main {
+  padding: 0;
+}
+
 .el-header {
   background-color: #fff;
   color: #333;
   line-height: 60px;
-}
-
-.el-main {
-  flex: 1;
 }
 
 .el-footer {
@@ -130,5 +280,15 @@ export default {
 }
 .layout-content-main {
   /* padding: 10px; */
+}
+
+.main-el-header {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: center;
+}
+.el-icon-s-fold {
+  font-size: 22px;
 }
 </style>

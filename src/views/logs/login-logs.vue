@@ -1,11 +1,10 @@
 <template>
   <div class="logs">
-    <!-- 头部 -->
     <div class="logs-head">
       <el-input
         class="logs-head-input"
         v-model="user"
-        placeholder="请输入用户名"
+        placeholder="登录用户名"
       ></el-input>
       <el-date-picker
         v-model="logs_date"
@@ -18,7 +17,7 @@
       <el-select
         class="logs-head-select"
         v-model="logsType"
-        placeholder="请选择日志类型"
+        placeholder="请选择登录状态"
       >
         <el-option
           v-for="item in logs_options"
@@ -39,59 +38,53 @@
     <!-- 列表 -->
     <div class="logs-table">
       <el-table
-        class="logs-table-list"
         v-loading="loading"
         ref="multipleTable"
         :data="tableData"
         tooltip-effect="dark"
         style="width: 100%"
       >
-        <el-table-column prop="time" label="时间" width="200" align="center">
+        <el-table-column label="ID" width="100" align="center">
+          <template slot-scope="scope">
+            {{ scope.row.id.slice(-8) }}
+          </template>
         </el-table-column>
         <el-table-column prop="name" label="用户名" width="100" align="center">
         </el-table-column>
-        <el-table-column label="服务名" width="220" align="center">
+        <el-table-column prop="host" label="登录IP" width="140" align="center">
+        </el-table-column>
+        <el-table-column prop="address" label="登录地点" align="center">
+        </el-table-column>
+        <el-table-column prop="client" label="操作系统" align="center">
+        </el-table-column>
+        <el-table-column prop="browser" label="浏览器" align="center">
+        </el-table-column>
+        <el-table-column label="登录状态" align="center">
           <template slot-scope="scope">
-            <el-tag type="" effect="dark">
-              {{ scope.row.service }}
+            <el-tag type="success" effect="dark">
+              {{ scope.row.status ? '成功' : '异常' }}
             </el-tag>
           </template>
         </el-table-column>
-        <el-table-column prop="host" label="ip地址" align="center">
+        <el-table-column prop="action" label="操作信息" align="center">
         </el-table-column>
-        <el-table-column prop="client" label="客户端" align="center">
-        </el-table-column>
-        <el-table-column label="浏览器" align="center">
-          <template slot-scope="scope">
-            <p class="logs-table__borwser">{{ scope.row.browser }}</p>
-          </template>
-        </el-table-column>
-        <el-table-column prop="action" label="操作" align="center">
-          <template slot-scope="scope">
-            <el-button
-              type="success"
-              icon="el-icon-edit"
-              @click="handleOpenDialog(scope.$index, scope.row)"
-              >详情</el-button
-            >
-          </template>
+        <el-table-column prop="loginTime" label="登录日期" align="center">
         </el-table-column>
       </el-table>
-      <!-- 分页 -->
-      <div class="table-pagination">
-        <el-pagination
-          background
-          :current-page="currentPage"
-          prev-text="上一页"
-          next-text="下一页"
-          layout="prev, pager, next"
-          :total="total"
-          @current-change="handleCurrentChange"
-          @prev-click="handlePrevClick"
-          @next-click="handleNextClick"
-        >
-        </el-pagination>
-      </div>
+    </div>
+    <!-- 多页 -->
+    <div class="logs-pagination">
+      <el-pagination
+        background
+        @current-change="handleCurrentChange"
+        :current-page.sync="currentPage"
+        :page-size="10"
+        :prev-text="'上一页'"
+        :next-text="'下一页'"
+        layout="total, prev, pager, next"
+        :total="total"
+      >
+      </el-pagination>
     </div>
     <!-- 详情弹窗 -->
     <el-dialog title="查看信息" :visible.sync="dialogTableVisible">
@@ -226,12 +219,11 @@
 </template>
 
 <script>
-import { GetLogsAPI } from '@/api/logs_api.js'
+import { GetLoginLogsAPI } from '@/api/logs_api.js'
 export default {
+  name: "loginLogs",
   data () {
     return {
-      currentPage: 1, // 当前页码
-      total: 0, // 数据总数
       loading: true,
       info: {
         username: "",
@@ -253,18 +245,16 @@ export default {
       logs_options: [
         {
           value: '选项1',
-          label: '行为日志'
+          label: '登录成功'
         },
         {
           value: '选项2',
-          label: '访问日志'
-        },
-        {
-          value: '选项3',
-          label: '错误日志'
+          label: '登录异常'
         }
       ],
       tableData: [],
+      currentPage: 1,
+      total: 0
     }
   },
   mounted () {
@@ -276,83 +266,72 @@ export default {
       const params = {
         page: this.currentPage,
       }
-      const res = await GetLogsAPI(params)
-      const data = []
-      const { list, count } = res.result
-      list.forEach(item => {
-        data.push({
-          time: item.reportTime,
+      const res = await GetLoginLogsAPI(params)
+      const list = []
+      res.result.data.forEach(item => {
+        list.push({
+          id: item._id,
           name: item.username,
-          service: item.url,
           host: item.host,
+          address: item.address,
           client: item.client,
           browser: item.browser,
+          status: item.status,
+          action: item.status ? '登录成功' : '登录异常',
+          loginTime: item.last_login_time
         })
       });
-      this.total = count
-      this.tableData = data
-      console.log('日志列表', data);
-    },
-    // 跳转到指定页码
-    goToPage (page) {
-      // 更新当前页码
-      this.currentPage = page;
-      // 加载数据
-      this.getLogs();
+      this.tableData = list
+      this.total = res.result.total
+      this.loading = false
+      console.log('日志列表', list);
     },
     handleOpenDialog () {
       this.dialogTableVisible = true
     },
-    handleCurrentChange (val) {
-      this.currentPage = val
+
+    handleCurrentChange (page) {
+      console.log('当前页', page);
+      this.currentPage = page
       this.getLogs()
-    },
-    handlePrevClick () {
-      this.currentPage--
-    },
-    handleNextClick () {
-      this.currentPage++
     }
   }
 }
 </script>
 
-<style scoped>
-.el-table::before {
-  content: '';
-  position: absolute;
-  background-color: #fff; /* 底部颜色 */
-  z-index: 1;
-}
-.logs-head {
+<style lang="scss" scoped>
+.logs {
+  width: 100%;
+  height: 100%;
   display: flex;
-  flex-direction: row;
-  padding: 10px 0;
+  flex-direction: column;
+  .logs-head {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    height: 60px;
+    .logs-head-select {
+      margin-left: 10px;
+    }
+    .logs-head-input {
+      width: 200px;
+      margin-right: 10px;
+    }
+    .logs-head-btn {
+      margin-left: 10px;
+    }
+  }
+  .logs-table {
+    flex: 1;
+  }
+  .logs-pagination {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
+  }
 }
-.logs-head-select {
-  margin-left: 10px;
-}
-.logs-head-input {
-  width: 200px;
-  margin-right: 10px;
-}
-.logs-head-btn {
-  margin-left: 10px;
-}
-.logs-table-list {
-  height: calc(100vh - 280px);
-  border-bottom: none;
-}
-.logs-table {
-  /* background: saddlebrown; */
-}
-.table-pagination {
-  height: 40px;
-  display: flex;
-  background: #fff;
-  align-items: center;
-  justify-content: flex-end;
-}
+
 .logs-table__borwser {
   /*文字最多显示二行 */
   display: -webkit-box; /* 设置为基于 WebKit 的盒子模型 */
