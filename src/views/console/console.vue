@@ -58,8 +58,8 @@
       </el-col>
       <el-col :span="8">
         <div class="grid-updatelogs-item">
-          <p>更新日志</p>
           <el-timeline>
+            <p class="grid-updatelogs-item--title">更新日志</p>
             <el-timeline-item
               v-for="(activity, index) in activities"
               :key="index"
@@ -143,22 +143,26 @@ export default {
         },
       },
       activities: [{
-        content: '支持使用图标',
-        timestamp: '2018-04-12 20:46',
+        content: '控制台图表搭建',
+        timestamp: '2023-06-06 22:13',
         size: 'large',
-        type: 'primary',
-        icon: 'el-icon-more'
+        icon: 'el-icon-loading',
+        color: "#6550c7"
       }, {
-        content: '支持自定义颜色',
-        timestamp: '2018-04-03 20:46',
+        content: '支持tabs页面切换',
+        timestamp: '2023-06-04 12:26',
+        size: 'large',
         color: '#0bbd87'
       }, {
-        content: '支持自定义尺寸',
-        timestamp: '2018-04-03 20:46',
-        size: 'large'
+        content: '项目基础建设搭建完成',
+        timestamp: '2023-06-02 20:46',
+        size: 'large',
+        color: '#f4ad4c'
       }, {
-        content: '默认样式的节点',
-        timestamp: '2018-04-03 20:46'
+        content: '项目初始化',
+        timestamp: '2023-06-01 20:46',
+        size: 'large',
+        color: '#4e63eb'
       }]
 
     }
@@ -230,8 +234,15 @@ export default {
   box-sizing: border-box;
   height: 580px;
   padding: 10px;
-  display: flex;
-  justify-content: space-between;
+  .grid-updatelogs-item--title {
+    font-size: 20px;
+    color: #303133;
+    padding-bottom: 10px;
+    font-weight: bold;
+  }
+  .el-timeline {
+    padding-left: 10px;
+  }
 }
 .grid-item p {
   color: #fff;

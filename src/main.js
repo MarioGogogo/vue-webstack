@@ -16,7 +16,8 @@ import './assets/css/nav.css';
 import 'echarts';
 import ECharts from 'vue-echarts';
 Vue.component('VChart', ECharts);
-
+import JsonViewer from 'vue-json-viewer';
+Vue.use(JsonViewer);
 Vue.config.productionTip = false;
 import store from './store';
 new Vue({

@@ -46,18 +46,42 @@
         tooltip-effect="dark"
         style="width: 100%"
       >
-        <el-table-column prop="time" label="时间" width="200" align="center">
-        </el-table-column>
-        <el-table-column prop="name" label="用户名" width="100" align="center">
-        </el-table-column>
-        <el-table-column label="服务名" width="220" align="center">
+        <el-table-column label="ID" width="100" align="center">
           <template slot-scope="scope">
-            <el-tag type="" effect="dark">
-              {{ scope.row.service }}
+            {{ scope.row.id.slice(-8) }}
+          </template>
+        </el-table-column>
+
+        <el-table-column prop="name" label="操作人" width="140" align="center">
+        </el-table-column>
+        <el-table-column label="错误类型" width="120" align="left">
+          <template slot-scope="scope">
+            <el-tag
+              v-if="scope.row.errorType === 'jsError'"
+              type="danger"
+              effect="dark"
+            >
+              JS错误
+            </el-tag>
+            <el-tag
+              v-if="scope.row.errorType === 'promiseError'"
+              type="warning"
+              effect="dark"
+            >
+              Promise错误
+            </el-tag>
+            <el-tag
+              v-if="scope.row.errorType === 'vueError'"
+              type="info"
+              effect="dark"
+            >
+              Vue错误
             </el-tag>
           </template>
         </el-table-column>
-        <el-table-column prop="host" label="ip地址" align="center">
+        <el-table-column prop="host" label="host" align="center">
+        </el-table-column>
+        <el-table-column prop="address" label="地域" align="center">
         </el-table-column>
         <el-table-column prop="client" label="客户端" align="center">
         </el-table-column>
@@ -65,6 +89,8 @@
           <template slot-scope="scope">
             <p class="logs-table__borwser">{{ scope.row.browser }}</p>
           </template>
+        </el-table-column>
+        <el-table-column prop="time" label="时间" width="200" align="center">
         </el-table-column>
         <el-table-column prop="action" label="操作" align="center">
           <template slot-scope="scope">
@@ -100,7 +126,7 @@
           <el-row>
             <el-col :span="12">
               <el-row type="flex">
-                <span class="dialog-info-item__label">用户名</span>
+                <span class="dialog-info-item__label">操作人</span>
                 <el-input
                   v-model="info.username"
                   placeholder="请输入用户名"
@@ -149,9 +175,9 @@
         </div>
         <div class="dialog-info-item">
           <el-row type="flex">
-            <span class="dialog-info-item__label">服务名</span>
+            <span class="dialog-info-item__label">URL</span>
             <el-input
-              v-model="info.service"
+              v-model="info.url"
               placeholder="请输入服务名"
               disabled
             ></el-input>
@@ -163,17 +189,7 @@
               <el-row type="flex" align="center">
                 <span class="dialog-info-item__label">时间</span
                 ><el-input
-                  v-model="info.reportTime"
-                  placeholder="请输入内容"
-                  disabled
-                ></el-input>
-              </el-row>
-            </el-col>
-            <el-col :span="12">
-              <el-row type="flex">
-                <span class="dialog-info-item__label">持续时间</span
-                ><el-input
-                  v-model="info.duration"
+                  v-model="info.time"
                   placeholder="请输入内容"
                   disabled
                 ></el-input>
@@ -183,33 +199,7 @@
         </div>
         <div class="dialog-info-item">
           <el-row type="flex">
-            <span class="dialog-info-item__label">参数</span>
-            <el-input
-              type="textarea"
-              :autosize="{ minRows: 2, maxRows: 4 }"
-              placeholder="请输入内容"
-              v-model="info.request"
-              disabled
-            >
-            </el-input>
-          </el-row>
-        </div>
-        <div class="dialog-info-item">
-          <el-row type="flex">
-            <span class="dialog-info-item__label">自定义数据</span>
-            <el-input
-              type="textarea"
-              :autosize="{ minRows: 2, maxRows: 4 }"
-              placeholder="请输入内容"
-              v-model="info.response"
-              disabled
-            >
-            </el-input>
-          </el-row>
-        </div>
-        <div class="dialog-info-item">
-          <el-row type="flex">
-            <span class="dialog-info-item__label">异常</span>
+            <span class="dialog-info-item__label">异常信息</span>
             <el-input
               type="textarea"
               :autosize="{ minRows: 2, maxRows: 4 }"
@@ -234,16 +224,15 @@ export default {
       total: 0, // 数据总数
       loading: true,
       info: {
+        id: "",
         username: "",
+        errorType: "",
         host: "",
         client: "",
         browser: "",
-        service: "",
-        reportTime: "",
-        duration: '',
-        request: "",
-        response: "",
-        message: ""
+        message: "",
+        time: "",
+        url: ""
       },
       user: "",
       logs_date: "",
@@ -253,15 +242,15 @@ export default {
       logs_options: [
         {
           value: '选项1',
-          label: 'js错误日志'
+          label: 'js错误'
         },
         {
           value: '选项2',
-          label: 'promise错误日志'
+          label: 'promise错误'
         },
         {
           value: '选项3',
-          label: 'vue错误日志'
+          label: 'vue错误'
         }
       ],
       tableData: [],
@@ -282,12 +271,17 @@ export default {
       const { data, total } = res.result
       data.forEach(item => {
         list.push({
-          time: item.reportTime,
+          id: item._id,
           name: item.username,
-          service: item.url,
+          errorType: item.errorType,
+          url: item.url,
           host: item.host,
           client: item.client,
-          browser: item.browser,
+          browser: item.userAgent,
+          time: item.reportTime,
+          selector: item.selector,
+          stack: item.stack,
+          message: item.message
         })
       });
       this.total = total
@@ -302,8 +296,31 @@ export default {
       // 加载数据
       this.getLogs();
     },
-    handleOpenDialog () {
+    handleOpenDialog (index, row) {
+      console.log("%c Line:335 🍑 index, row", "font-size:18px;color:#ffffff;background:#FFCC99", index, row);
       this.dialogTableVisible = true
+      // 根据错误信息隐藏某些弹窗内容
+      if (row.errorType == 'jsError') {
+        this.textarea2 = row.message
+      } else if (row.errorType == 'vueError') {
+        this.textarea2 = row.message
+      } else if (row.errorType == 'promiseError') {
+        this.textarea2 = row.message
+      }
+      this.info = {
+        id: row._id,
+        username: row.userName,
+        errorType: row.errorType,
+        host: row.host,
+        client: row.client,
+        browser: row.browser,
+        message: row.message,
+        time: row.time,
+        fileName: row.fileName,
+        url: row.url,
+        selector: row.selector,
+        stack: row.stack,
+      }
     },
     handleCurrentChange (val) {
       this.currentPage = val
@@ -361,7 +378,7 @@ export default {
   overflow: hidden; /* 设置溢出隐藏 */
 }
 .dialog-info-item {
-  font-size: 20px;
+  /* font-size: 20px; */
   margin-bottom: 20px;
 }
 .dialog-info-item__label {
