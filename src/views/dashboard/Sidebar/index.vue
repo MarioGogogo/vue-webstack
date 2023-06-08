@@ -35,10 +35,6 @@
         <i class="el-icon-attract"></i>
         <span slot="title">链接列表</span>
       </el-menu-item>
-      <el-menu-item index="/main/setting">
-        <i class="el-icon-setting"></i>
-        <span slot="title">系统设置</span>
-      </el-menu-item>
       <el-submenu index="logs">
         <template slot="title">
           <i class="el-icon-location"></i>
@@ -61,6 +57,10 @@
           <span slot="title">操作日志</span>
         </el-menu-item>
       </el-submenu>
+      <el-menu-item index="/main/setting">
+        <i class="el-icon-setting"></i>
+        <span slot="title">系统设置</span>
+      </el-menu-item>
     </el-menu>
     <!-- 侧边栏 -->
   </el-aside>

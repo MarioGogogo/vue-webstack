@@ -126,6 +126,12 @@
           <el-row>
             <el-col :span="12">
               <el-row type="flex">
+                <span class="dialog-info-item__label">ID</span>
+                <el-input v-model="info.id" disabled></el-input>
+              </el-row>
+            </el-col>
+            <el-col :span="12">
+              <el-row type="flex">
                 <span class="dialog-info-item__label">操作人</span>
                 <el-input
                   v-model="info.username"
@@ -162,29 +168,16 @@
         </div>
         <div class="dialog-info-item">
           <el-row type="flex">
-            <span class="dialog-info-item__label">浏览器</span>
-            <el-input
-              type="textarea"
-              :autosize="{ minRows: 2, maxRows: 4 }"
-              placeholder="请输入内容"
-              v-model="info.browser"
-              disabled
-            >
-            </el-input>
-          </el-row>
-        </div>
-        <div class="dialog-info-item">
-          <el-row type="flex">
-            <span class="dialog-info-item__label">URL</span>
-            <el-input
-              v-model="info.url"
-              placeholder="请输入服务名"
-              disabled
-            ></el-input>
-          </el-row>
-        </div>
-        <div class="dialog-info-item">
-          <el-row type="flex">
+            <el-col :span="12">
+              <el-row type="flex">
+                <span class="dialog-info-item__label">浏览器</span>
+                <el-input
+                  v-model="info.browser"
+                  placeholder="请输入用户名"
+                  disabled
+                ></el-input>
+              </el-row>
+            </el-col>
             <el-col :span="12">
               <el-row type="flex" align="center">
                 <span class="dialog-info-item__label">时间</span
@@ -199,15 +192,31 @@
         </div>
         <div class="dialog-info-item">
           <el-row type="flex">
-            <span class="dialog-info-item__label">异常信息</span>
+            <span class="dialog-info-item__label">URL</span>
             <el-input
+              v-model="info.url"
+              placeholder="请输入服务名"
+              disabled
+            ></el-input>
+          </el-row>
+        </div>
+        <div class="dialog-info-item">
+          <el-row type="flex">
+            <span class="dialog-info-item__label">异常信息</span>
+            <!-- <el-input
               type="textarea"
               :autosize="{ minRows: 2, maxRows: 4 }"
               placeholder="请输入内容"
               v-model="info.message"
               disabled
             >
-            </el-input>
+            </el-input> -->
+            <json-viewer
+              :value="info.message"
+              style="width: 100%"
+              :expand-depth="2"
+              sort
+            ></json-viewer>
           </el-row>
         </div>
       </div>
@@ -220,6 +229,7 @@ import { GetLogsAPI } from '@/api/logs_api.js'
 export default {
   data () {
     return {
+      labelPosition: "left",
       currentPage: 1, // 当前页码
       total: 0, // 数据总数
       loading: true,
@@ -308,7 +318,7 @@ export default {
         this.textarea2 = row.message
       }
       this.info = {
-        id: row._id,
+        id: row.id,
         username: row.userName,
         errorType: row.errorType,
         host: row.host,
@@ -336,7 +346,7 @@ export default {
 }
 </script>
 
-<style scoped>
+<style lang="scss" scoped>
 .el-table::before {
   content: '';
   position: absolute;
@@ -380,10 +390,17 @@ export default {
 .dialog-info-item {
   /* font-size: 20px; */
   margin-bottom: 20px;
+  ::v-deep .el-input__inner {
+    color: #000;
+  }
+  ::v-deep .el-textarea__inner {
+    color: #f82267;
+  }
 }
 .dialog-info-item__label {
   display: flex;
   align-items: center;
-  width: 120px;
+  width: 80px;
+  margin-left: 10px;
 }
 </style>
