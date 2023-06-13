@@ -91,7 +91,7 @@ const routes = [
           title: '性能日志',
         },
         components: {
-          table: () => import(/* webpackChunkName: "setting" */ '@/views/console/logs.vue'),
+          table: () => import(/* webpackChunkName: "setting" */ '@/views/logs/performance-logs.vue'),
         },
       },
       {

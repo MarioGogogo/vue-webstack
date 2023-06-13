@@ -52,36 +52,46 @@
           </template>
         </el-table-column>
 
-        <el-table-column prop="name" label="操作人" width="140" align="center">
+        <el-table-column
+          prop="projectName"
+          label="项目"
+          width="140"
+          align="center"
+        >
         </el-table-column>
-        <el-table-column label="错误类型" width="120" align="left">
+        <el-table-column label="性能类型" width="120" align="left">
           <template slot-scope="scope">
             <el-tag
-              v-if="scope.row.errorType === 'jsError'"
+              v-if="scope.row.eventType === 'paint'"
               type="danger"
               effect="dark"
             >
-              JS错误
+              paint
             </el-tag>
             <el-tag
-              v-if="scope.row.errorType === 'promiseError'"
+              v-if="scope.row.eventType === 'timing'"
               type="warning"
               effect="dark"
             >
-              Promise错误
+              timing
             </el-tag>
             <el-tag
-              v-if="scope.row.errorType === 'vueError'"
+              v-if="scope.row.eventType === 'firstInputDelay'"
               type="info"
               effect="dark"
             >
-              Vue错误
+              firstInputDelay
             </el-tag>
           </template>
         </el-table-column>
         <el-table-column prop="host" label="host" align="center">
         </el-table-column>
-        <el-table-column prop="address" label="地域" align="center">
+        <el-table-column label="网页地址" align="center">
+          <template slot-scope="scope">
+            <p class="logs-table__borwser">
+              {{ scope.row.url.match(/\/([^/?]+)[/?]?$/)[1] || '' }}
+            </p>
+          </template>
         </el-table-column>
         <el-table-column prop="client" label="客户端" align="center">
         </el-table-column>
@@ -192,31 +202,69 @@
         </div>
         <div class="dialog-info-item">
           <el-row type="flex">
+            <el-col :span="12">
+              <el-row type="flex">
+                <span class="dialog-info-item__label">firstPaint</span>
+                <el-input
+                  v-model="info.firstPaint"
+                  placeholder="请输入用户名"
+                  disabled
+                ></el-input>
+              </el-row>
+            </el-col>
+            <el-col :span="12">
+              <el-row type="flex" align="center">
+                <span class="dialog-info-item__label"
+                  >largestContentfulPaint</span
+                ><el-input
+                  v-model="info.largestContentfulPaint"
+                  placeholder="请输入内容"
+                  disabled
+                ></el-input>
+              </el-row>
+            </el-col>
+          </el-row>
+        </div>
+        <div class="dialog-info-item">
+          <el-row type="flex">
+            <el-col :span="12">
+              <el-row type="flex">
+                <span class="dialog-info-item__label">connectTime</span>
+                <el-input v-model="info.connectTime" disabled></el-input>
+              </el-row>
+            </el-col>
+            <el-col :span="12">
+              <el-row type="flex" align="center">
+                <span class="dialog-info-item__label">loadTIme</span
+                ><el-input v-model="info.loadTIme" disabled></el-input>
+              </el-row>
+            </el-col>
+          </el-row>
+        </div>
+        <div class="dialog-info-item">
+          <el-row type="flex">
+            <el-col :span="12">
+              <el-row type="flex">
+                <span class="dialog-info-item__label">parseDOMTime</span>
+                <el-input v-model="info.parseDOMTime" disabled></el-input>
+              </el-row>
+            </el-col>
+            <el-col :span="12">
+              <el-row type="flex" align="center">
+                <span class="dialog-info-item__label">timeToInteractive</span
+                ><el-input v-model="info.timeToInteractive" disabled></el-input>
+              </el-row>
+            </el-col>
+          </el-row>
+        </div>
+        <div class="dialog-info-item">
+          <el-row type="flex">
             <span class="dialog-info-item__label">URL</span>
             <el-input
               v-model="info.url"
               placeholder="请输入服务名"
               disabled
             ></el-input>
-          </el-row>
-        </div>
-        <div class="dialog-info-item">
-          <el-row type="flex">
-            <span class="dialog-info-item__label">异常信息</span>
-            <!-- <el-input
-              type="textarea"
-              :autosize="{ minRows: 2, maxRows: 4 }"
-              placeholder="请输入内容"
-              v-model="info.message"
-              disabled
-            >
-            </el-input> -->
-            <json-viewer
-              :value="info.message"
-              style="width: 100%"
-              :expand-depth="2"
-              sort
-            ></json-viewer>
           </el-row>
         </div>
       </div>
@@ -235,8 +283,8 @@ export default {
       loading: true,
       info: {
         id: "",
-        username: "",
-        errorType: "",
+        projectName: "",
+        eventType: "",
         host: "",
         client: "",
         browser: "",
@@ -251,16 +299,16 @@ export default {
       logsType: "",
       logs_options: [
         {
-          value: '选项1',
+          value: 'firstInputDelay',
           label: '首次输入延迟'
         },
         {
-          value: '选项2',
-          label: 'promise错误'
+          value: 'timing',
+          label: '统计每个timing阶段的时间'
         },
         {
-          value: '选项3',
-          label: 'vue错误'
+          value: 'paint',
+          label: '统计每个paint阶段的时间'
         }
       ],
       tableData: [],
@@ -274,7 +322,7 @@ export default {
     async getLogs () {
       const params = {
         page: this.currentPage,
-        type: "error"
+        type: "performance"
       }
       const res = await GetLogsAPI(params)
       let list = []
@@ -282,8 +330,8 @@ export default {
       data.forEach(item => {
         list.push({
           id: item._id,
-          name: item.username,
-          errorType: item.errorType,
+          projectName: item.projectName,
+          eventType: item.eventType,
           url: item.url,
           host: item.host,
           client: item.client,
@@ -291,7 +339,8 @@ export default {
           time: item.reportTime,
           selector: item.selector,
           stack: item.stack,
-          message: item.message
+          message: item.message,
+          ...item
         })
       });
       this.total = total
@@ -310,27 +359,18 @@ export default {
       console.log("%c Line:335 🍑 index, row", "font-size:18px;color:#ffffff;background:#FFCC99", index, row);
       this.dialogTableVisible = true
       // 根据错误信息隐藏某些弹窗内容
-      if (row.errorType == 'jsError') {
-        this.textarea2 = row.message
-      } else if (row.errorType == 'vueError') {
-        this.textarea2 = row.message
-      } else if (row.errorType == 'promiseError') {
-        this.textarea2 = row.message
+      let s = {}
+      if (row.eventType == 'paint') {
+        s = {
+          firstPaint: row.firstPaint,
+          largestContentfulPaint: row.largestContentfulPaint
+        }
+      } else if (row.eventType == "timing") {
+        s = row.message
+      } else if (row.eventType == 'firstInputDelay') {
+        console.log('123');
       }
-      this.info = {
-        id: row.id,
-        username: row.userName,
-        errorType: row.errorType,
-        host: row.host,
-        client: row.client,
-        browser: row.browser,
-        message: row.message,
-        time: row.time,
-        fileName: row.fileName,
-        url: row.url,
-        selector: row.selector,
-        stack: row.stack,
-      }
+      this.info = Object.assign({}, s, row)
     },
     handleCurrentChange (val) {
       this.currentPage = val
