@@ -8,7 +8,7 @@ const LoadingInstance = {
 function myAxios(axiosConfig, customOptions) {
   const service = axios.create({
     // baseURL: 'http://127.0.0.1:7001',
-    baseURL: 'https://43.134.241.119:7001', // 设置统一的请求前缀
+    baseURL: 'https://egg-v1.fml.ink', // 设置统一的请求前缀
     timeout: 3000, // 设置统一的超时时长
   });
   // 自定义配置
